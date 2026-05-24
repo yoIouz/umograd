@@ -1,0 +1,46 @@
+spring:
+  application:
+    name: content-service
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/content_db?useUnicode=true&characterEncoding=UTF-8&connectionCollation=utf8mb4_unicode_ci
+    username: root
+    password: root
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+  flyway:
+    baseline-on-migrate: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  web:
+    resources:
+      static-locations: classpath:/static/
+server:
+  port: 8181
+  error:
+    include-message: always
+
+upload:
+  path: D:/Университет/Диплом/umograd-backend/content-service/src/main/resources/img/
+
+jwt:
+  secret: mysupersecretkeymysupersecretkey
+
+external:
+  providers:
+    opentdb:
+      base-url: https://opentdb.com
+    dictionary:
+      base-url: https://api.dictionaryapi.dev
+    numbers:
+      base-url: http://numbersapi.com
+
+logging:
+  level:
+    org.springframework.boot.context: DEBUG

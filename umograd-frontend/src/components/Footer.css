@@ -1,0 +1,9 @@
+.footer {
+    position: fixed;          /* фиксируем внизу экрана */
+    right: 10px;              /* отступ справа */
+    bottom: 10px;             /* отступ снизу */
+    font-size: 14px;
+    color: #545D61;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;         /* bold */
+}

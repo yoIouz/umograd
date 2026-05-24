@@ -1,0 +1,113 @@
+name: umograd-1
+
+services:
+  db:
+    image: mysql:8.1.0
+    restart: on-failure
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./umograd-backend/init-scripts:/docker-entrypoint-initdb.d
+      - mysql_data:/var/lib/mysql
+    networks:
+      - umograd-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:8.6.3
+    restart: on-failure
+    ports:
+      - "6379:6379"
+    networks:
+      - umograd-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 2s
+      retries: 5
+
+  umograd-service:
+    build:
+      context: ./umograd-backend
+      dockerfile: Dockerfile
+      target: umograd-app
+    container_name: umograd-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://${DB_HOST}:3306/umograd?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=${DB_ROOT_PASSWORD}
+    networks:
+      - umograd-network
+
+  content-service:
+    build:
+      context: ./umograd-backend
+      dockerfile: Dockerfile
+      target: content-app
+    container_name: umograd-content-app
+    ports:
+      - "8181:8181"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://${DB_HOST}:3306/umograd?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=${DB_ROOT_PASSWORD}
+    networks:
+      - umograd-network
+
+  analytic-service:
+    build:
+      context: ./umograd-backend
+      dockerfile: Dockerfile
+      target: analytic-app
+    container_name: umograd-analytic-app
+    ports:
+      - "${ANALYTIC_SERVICE_PORT}:${ANALYTIC_SERVICE_PORT}"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://${DB_HOST}:3306/analytic_db?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=${DB_ROOT_PASSWORD}
+      - SPRING_DATA_REDIS_HOST=${REDIS_HOST}
+      - SPRING_DATA_REDIS_PORT=${REDIS_PORT}
+    networks:
+      - umograd-network
+
+  frontend:
+    build:
+      context: ./umograd-frontend
+      dockerfile: Dockerfile
+    container_name: umograd-frontend-app
+    ports:
+      - "${FRONTEND_PORT}:80"
+    depends_on:
+      - umograd-service
+      - content-service
+      - analytic-service
+    networks:
+      - umograd-network
+
+volumes:
+  mysql_data:
+
+networks:
+  umograd-network:
+    driver: bridge

@@ -1,0 +1,141 @@
+.children-page-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.children-page-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #6F7376;
+    font-family: 'Nunito', sans-serif;
+    text-align: center;
+    margin: 0;
+}
+
+.children-add-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background: rgba(255, 255, 255, 0.4);
+    padding: 20px;
+    border-radius: 20px;
+}
+
+.children-input {
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 15px;
+    padding: 10px 15px;
+    font-family: 'Nunito', sans-serif;
+    color: #6F7376;
+    font-size: 14px;
+    outline: none;
+}
+
+.children-add-btn {
+    background: linear-gradient(90deg, #7FCA68 0%, #A3DB8F 100%);
+    border: none;
+    border-radius: 30px;
+    padding: 12px;
+    color: #fff;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    font-size: 15px;
+    transition: transform 0.2s;
+}
+
+.children-add-btn:hover {
+    transform: scale(1.02);
+}
+
+.children-list-wrapper {
+    width: 100%;
+    margin-top: 30px;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 24px;
+    padding: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.03);
+    overflow: visible !important;
+}
+
+.children-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 12px;
+    overflow: visible !important;
+}
+
+.children-table th {
+    padding: 12px 16px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    color: #718096;
+    font-size: 14px;
+    text-align: left;
+    border-bottom: 2px solid #edf2f7;
+}
+
+.children-table tr {
+    background: transparent;
+}
+
+.children-table th {
+    padding: 12px 16px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    color: #718096;
+    font-size: 14px;
+    text-align: left;
+    border-bottom: 2px solid #edf2f7;
+}
+
+.child-username {
+    font-weight: 700;
+}
+
+.child-table-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: flex-start;
+    border-bottom: 1px solid #edf2f7;
+    padding: 16px;
+}
+
+.child-stats-btn {
+    background: linear-gradient(90deg, #689ECA 0%, #8FDADB 100%);
+    border: none;
+    border-radius: 20px;
+    padding: 6px 15px;
+    color: #fff;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.child-delete-btn {
+    background: #FF8F8F;
+    border: none;
+    border-radius: 20px;
+    padding: 6px 15px;
+    color: #fff;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.child-stats-btn:hover, .child-delete-btn:hover {
+    opacity: 0.9;
+}
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+}
