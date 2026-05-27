@@ -1,6 +1,7 @@
 package com.umograd.analytic.controller;
 
 import com.umograd.analytic.dto.*;
+import com.umograd.analytic.dto.report.ChildReportDto;
 import com.umograd.analytic.service.AnalyticService;
 import com.umograd.analytic.service.ReportService;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +26,8 @@ public class AnalyticController {
     }
 
     @GetMapping("/report/{childId}")
-    public List<ChildProgressPoint> getReport(@PathVariable Long childId,
-                                              @RequestParam(defaultValue = "month") String period) {
+    public ChildReportDto getReport(@PathVariable Long childId,
+                                    @RequestParam(defaultValue = "month") String period) {
         return reportService.getChildReport(childId, period);
     }
 
@@ -51,7 +52,7 @@ public class AnalyticController {
     }
 
     @PostMapping("/report/aggregate")
-    public Map<Long, List<ChildProgressPoint>> getAggregateReport(@RequestBody List<Long> childIds) {
+    public Map<Long, ChildReportDto> getAggregateReport(@RequestBody List<Long> childIds) {
         return childIds.stream()
                 .collect(Collectors.toMap(
                         id -> id,

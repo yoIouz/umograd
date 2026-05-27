@@ -22,26 +22,7 @@ public interface TaskResultRepository extends JpaRepository<TaskResultEntity, Lo
        \s""", nativeQuery = true)
     List<TaskResultEntity> findLastResultsWithWindow(@Param("childId") Long childId, @Param("limit") int limit);
 
-    @Query(value = """
-        SELECT 
-            DATE_FORMAT(tr.finished_at, '%Y-%m-%d') as date, 
-            COALESCE(AVG(tr.score), 0.0) as averageScore,
-            COALESCE(AVG(TIMESTAMPDIFF(SECOND, tr.started_at, tr.finished_at)), 0.0) as averageTimeSeconds,
-            t.difficulty as difficulty
-        FROM content_db.task_results tr
-        JOIN content_db.tasks t ON tr.task_id = t.id
-        WHERE tr.child_id = :childId 
-          AND tr.finished_at IS NOT NULL
-          AND tr.finished_at >= CASE 
-              WHEN :period = 'day' THEN NOW() - INTERVAL 1 DAY
-              WHEN :period = 'week' THEN NOW() - INTERVAL 1 WEEK
-              WHEN :period = 'month' THEN NOW() - INTERVAL 1 MONTH
-              ELSE NOW() - INTERVAL 1 YEAR
-          END
-        GROUP BY DATE_FORMAT(tr.finished_at, '%Y-%m-%d'), t.difficulty
-        ORDER BY date ASC
-        """, nativeQuery = true)
-    List<Object[]> getAdvancedChildProgressHistory(@Param("childId") Long childId, @Param("period") String period);
+    List<TaskResultEntity> findAllByChildId(Long childId);
 
     @Query(value = """
         SELECT * FROM content_db.task_results 

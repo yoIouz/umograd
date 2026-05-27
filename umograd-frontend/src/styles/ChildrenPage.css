@@ -135,7 +135,56 @@
 }
 
 @media print {
-    .no-print {
+    .navbar,
+    .footer,
+    .no-print,
+    button,
+    header,
+    footer {
         display: none !important;
     }
+
+    body,
+    html,
+    .app-layout,
+    .app-main,
+    .children-page-container {
+        background: #fff !important;
+        overflow: visible !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    div[style*="position: fixed"] {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        background: #fff !important;
+        display: block !important;
+        overflow: visible !important;
+    }
+
+    div[style*="background: rgb(255, 255, 255)"],
+    div[style*="background: #fff"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-shadow: none !important;
+        padding: 10px !important;
+        margin: 0 !important;
+    }
+
+    div[style*="max-height: 65vh"] {
+        max-height: none !important;
+        overflow: visible !important;
+    }
+    div[style*="background: #f8fafc"],
+    div[style*="background: rgb(248, 250, 252)"] {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        margin-bottom: 20px !important;
+    }
 }
+

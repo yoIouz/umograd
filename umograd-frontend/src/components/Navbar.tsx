@@ -1,30 +1,20 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
-// import bellIcon from "../assets/notif.png";
 import menuDots from "../assets/menu.png";
-// import closeIcon from "../assets/close.png";
 import "./Navbar.css";
 import { useEffect, useRef, useState } from "react";
 import { useUser } from "../context/UserContext";
 
 export default function Navbar() {
     const navigate = useNavigate();
-    // const [showNotif, setShowNotif] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
-    // const notifRef = useRef<HTMLDivElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
 
     const { profile, setProfile } = useUser();
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
-            if (
-                /*notifRef.current &&
-                !notifRef.current.contains(event.target as Node) &&*/
-                menuRef.current &&
-                !menuRef.current.contains(event.target as Node)
-            ) {
-                // setShowNotif(false);
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
                 setShowMenu(false);
             }
         }
@@ -41,7 +31,6 @@ export default function Navbar() {
 
     if (!profile) return null;
 
-    // безопасные проверки
     let homePath = "/";
     if (Array.isArray(profile.roles) && profile.roles.includes("ROLE_MODERATOR")) {
         homePath = "/users";
@@ -52,9 +41,22 @@ export default function Navbar() {
     }
 
     const usernameFirstLetter = profile.username?.[0]?.toUpperCase() ?? "?";
+
     const tasksPath = Array.isArray(profile.roles) && profile.roles.includes("ROLE_MODERATOR")
         ? "/tasks-admin"
         : "/tasks";
+
+    const isParent = Array.isArray(profile.roles) && profile.roles.includes("ROLE_PARENT");
+    const isChild = Array.isArray(profile.roles) && profile.roles.includes("ROLE_CHILD");
+
+    let isOlderThan16 = false;
+    if (profile.birthDate) {
+        const age = new Date().getFullYear() - new Date(profile.birthDate).getFullYear();
+        isOlderThan16 = age >= 16;
+    }
+
+    const showSubscription = isParent || (isChild && isOlderThan16);
+
     return (
         <header className="navbar">
             <div className="navigation">
@@ -68,38 +70,15 @@ export default function Navbar() {
                     <NavLink to={homePath} className="nav-item">Главная</NavLink>
                     <NavLink to={tasksPath} className="nav-item">Задания</NavLink>
                     <NavLink to="/achievements" className="nav-item">Достижения</NavLink>
+                    {showSubscription && (
+                        <NavLink to="/subscription" className="nav-item">Подписка</NavLink>
+                    )}
                 </nav>
             </div>
 
             <span className="brand">Умоград</span>
 
             <div className="navbar-right">
-                {/* Уведомления
-                <div
-                    ref={notifRef}
-                    className={`notif-block ${showNotif ? "active" : ""}`}
-                    onClick={() => {
-                        setShowNotif(!showNotif);
-                        setShowMenu(false);
-                    }}
-                >
-                    <img src={bellIcon} alt="Уведомления" className="notif-icon" />
-                    <span className="notif-text">Уведомления</span>
-                    {showNotif && (
-                        <div className="dropdown dropdown-notif">
-                            {["Уведомление 1", "Уведомление 2", "Уведомление 3"].map((text, i) => (
-                                <div key={i} className="notif-item">
-                                    <span>{text}</span>
-                                    <button className="notif-close">
-                                        <img src={closeIcon} alt="Закрыть" />
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>*/}
-
-                {/* Профиль */}
                 <div className="profile-block" onClick={() => navigate("/profile")}>
                     {profile.avatarUrl ? (
                         <img src={profile.avatarUrl} alt="avatar" className="avatar" />
@@ -109,13 +88,9 @@ export default function Navbar() {
                     <span className="username">{profile.username}</span>
                 </div>
 
-                {/* Меню */}
                 <div ref={menuRef} className="menu-wrapper">
                     <button
-                        onClick={() => {
-                            setShowMenu(!showMenu);
-                            // setShowNotif(false);
-                        }}
+                        onClick={() => setShowMenu(!showMenu)}
                         className={`logout-circle ${showMenu ? "active" : ""}`}
                     >
                         <img src={menuDots} alt="Меню" className="menu-icon" />

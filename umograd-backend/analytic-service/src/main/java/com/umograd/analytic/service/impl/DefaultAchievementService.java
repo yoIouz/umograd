@@ -8,6 +8,7 @@ import com.umograd.analytic.entity.task.TaskResultEntity;
 import com.umograd.analytic.mapper.AchievementMapper;
 import com.umograd.analytic.repository.analytic.AchievementRepository;
 import com.umograd.analytic.repository.analytic.ChildAchievementRepository;
+import com.umograd.analytic.repository.task.TaskRepository;
 import com.umograd.analytic.repository.task.TaskResultRepository;
 import com.umograd.analytic.service.AchievementService;
 import com.umograd.analytic.util.ExpressionEvaluator;
@@ -16,8 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,15 +36,7 @@ public class DefaultAchievementService implements AchievementService {
 
     private final ExpressionEvaluator expressionEvaluator;
 
-    @Override
-    @Transactional
-    public List<AchievementGrantResponse> checkAndGrant(Long childId) {
-        return achievementRepository.findAll().stream()
-                .filter(a -> !childAchievementRepository.existsByChildIdAndAchievementId(childId, a.getId()))
-                .filter(a -> isConditionMet(childId, a))
-                .map(a -> saveAndMap(childId, a))
-                .collect(Collectors.toList());
-    }
+    private final TaskRepository taskRepository;
 
     @Override
     public List<Long> getEarnedAchievementIds(Long childId) {
@@ -56,14 +50,77 @@ public class DefaultAchievementService implements AchievementService {
         return achievementMapper.toResponseList(achievementRepository.findAll());
     }
 
+    @Override
+    @Transactional
+    public List<AchievementGrantResponse> checkAndGrant(Long childId) {
+        return achievementRepository.findAll().stream()
+                .filter(a -> !childAchievementRepository.existsByChildIdAndAchievementId(childId, a.getId()))
+                .filter(a -> isConditionMet(childId, a))
+                .map(a -> saveAndMap(childId, a))
+                .collect(Collectors.toList());
+    }
 
     private boolean isConditionMet(Long childId, AchievementEntity achievement) {
         List<TaskResultEntity> lastResults = taskResultRepository.findLastResultsWithWindow(childId, 20);
-        Map<String, Object> variables = Map.of(
-                "results", lastResults,
-                "targetValue", achievement.getConditionValue()
-        );
-        return expressionEvaluator.evaluateBoolean(achievement.getConditionExpression(), variables);
+        if (lastResults.isEmpty()) {
+            return false;
+        }
+
+        int target = achievement.getConditionValue();
+        String name = achievement.getName();
+
+        int currentCorrectStreak = 0;
+        int maxCorrectStreak = 0;
+        int currentQuizStreak = 0;
+        int maxQuizStreak = 0;
+        int totalDoneCount = 0;
+        int totalScore = 0;
+        Set<String> uniqueDifficulties = new HashSet<>();
+
+        for (TaskResultEntity r : lastResults) {
+            if (!"DONE".equals(r.getStatus())) {
+                currentCorrectStreak = 0;
+                currentQuizStreak = 0;
+                continue;
+            }
+
+            totalDoneCount++;
+
+            if (r.getScore() != null) {
+                totalScore += r.getScore();
+            }
+
+            if (r.getScore() != null && r.getScore() >= 100) {
+                currentCorrectStreak++;
+                maxCorrectStreak = Math.max(maxCorrectStreak, currentCorrectStreak);
+            } else {
+                currentCorrectStreak = 0;
+            }
+
+            var taskOpt = taskRepository.findById(r.getTaskId());
+            if (taskOpt.isPresent()) {
+                var task = taskOpt.get();
+                uniqueDifficulties.add(task.getDifficulty().toString());
+
+                String desc = task.getDescription() != null ? task.getDescription().toLowerCase() : "";
+                if (desc.contains("викторина") || desc.contains("quiz")) {
+                    currentQuizStreak++;
+                    maxQuizStreak = Math.max(maxQuizStreak, currentQuizStreak);
+                } else {
+                    currentQuizStreak = 0;
+                }
+            }
+        }
+
+        return switch (name) {
+            case "Снайпер" -> maxCorrectStreak >= target;
+            case "Алмазный ум" -> totalDoneCount >= target;
+            case "Король викторин" -> maxQuizStreak >= target;
+            case "Учёный исследователь" -> uniqueDifficulties.size() >= 3;
+            case "Золотая медаль" -> totalScore >= target;
+            case "Любимец команды" -> totalDoneCount >= target;
+            default -> false;
+        };
     }
 
     private AchievementGrantResponse saveAndMap(Long childId, AchievementEntity achievement) {

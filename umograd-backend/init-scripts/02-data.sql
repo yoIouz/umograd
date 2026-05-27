@@ -1,11 +1,11 @@
 SET NAMES 'utf8mb4';
 
-INSERT INTO analytic_db.achievements (id, name, description, icon_url, condition_expression, condition_value) VALUES (1, 'Снайпер', '10 верных заданий подряд', null, '#results.size() >= #targetValue and #results.?[status == "DONE" and score >= 100].size() >= #targetValue', 10);
-INSERT INTO analytic_db.achievements (id, name, description, icon_url, condition_expression, condition_value) VALUES (2, 'Алмазный ум', 'Решить 5 задач без ошибок', null, '#results.?[status == "DONE" and score >= 100].size() >= #targetValue', 5);
-INSERT INTO analytic_db.achievements (id, name, description, icon_url, condition_expression, condition_value) VALUES (3, 'Король викторин', 'Пройти 3 квиза подряд', null, '#results.size() >= #targetValue', 3);
-INSERT INTO analytic_db.achievements (id, name, description, icon_url, condition_expression, condition_value) VALUES (4, 'Учёный исследователь', 'Выполнить задания всех категорий сложности', null, '#results.size() >= 1', 1);
-INSERT INTO analytic_db.achievements (id, name, description, icon_url, condition_expression, condition_value) VALUES (5, 'Золотая медаль', 'Набрать суммарно 500 баллов за всё время', null, '#results.size() >= 1', 1);
-INSERT INTO analytic_db.achievements (id, name, description, icon_url, condition_expression, condition_value) VALUES (6, 'Любимец команды', 'Проявлять активность на платформе каждый день', null, '#results.size() >= 1', 1);
+INSERT INTO analytic_db.achievements (id, name, description, icon_url, condition_expression, condition_value) VALUES (1, 'Снайпер', '10 верных заданий подряд', null, 'JAVA_DRIVEN_STREAK', 10);
+INSERT INTO analytic_db.achievements (id, name, description, icon_url, condition_expression, condition_value) VALUES (2, 'Алмазный ум', 'Решить 5 задач без ошибок', null, 'JAVA_DRIVEN_COUNT', 5);
+INSERT INTO analytic_db.achievements (id, name, description, icon_url, condition_expression, condition_value) VALUES (3, 'Король викторин', 'Пройти 3 квиза подряд', null, 'JAVA_DRIVEN_QUIZ', 3);
+INSERT INTO analytic_db.achievements (id, name, description, icon_url, condition_expression, condition_value) VALUES (4, 'Учёный исследователь', 'Выполнить задания всех категорий сложности', null, 'JAVA_DRIVEN_CATEGORIES', 3);
+INSERT INTO analytic_db.achievements (id, name, description, icon_url, condition_expression, condition_value) VALUES (5, 'Золотая медаль', 'Набрать суммарно 500 баллов за всё время', null, 'JAVA_DRIVEN_SCORE', 500);
+INSERT INTO analytic_db.achievements (id, name, description, icon_url, condition_expression, condition_value) VALUES (6, 'Любимец команды', 'Проявлять активность на платформе каждый день', null, 'JAVA_DRIVEN_ACTIVITY', 7);
 
 INSERT INTO analytic_db.child_achievements (child_id, achievement_id, earned_at) VALUES (4, 1, '2026-05-13 00:48:45');
 

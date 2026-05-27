@@ -13,6 +13,7 @@ import TaskExecutionPage from "./pages/TaskExecutionPage";
 import AchievementsPage from "./pages/AchievementsPage.tsx";
 import SystemMonitoringPage from "./pages/SystemMonitoringPage";
 import AccessGuard from "./components/AccessGuard.tsx";
+import SubscriptionPage from "./pages/SubscriptionPage.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -111,6 +112,18 @@ export const router = createBrowserRouter([
                         element={<AchievementsPage/>}
                         allowedRoles={[
                             "ROLE_MODERATOR",
+                            "ROLE_PARENT",
+                            "ROLE_CHILD",
+                        ]}
+                    />
+                ),
+            },
+            {
+                path: "/subscription",
+                element: (
+                    <ProtectedRoute
+                        element={<SubscriptionPage/>}
+                        allowedRoles={[
                             "ROLE_PARENT",
                             "ROLE_CHILD",
                         ]}

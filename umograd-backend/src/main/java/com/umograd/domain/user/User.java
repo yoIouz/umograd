@@ -23,7 +23,7 @@ public class User {
     @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(unique = true) // email может быть необязательным
+    @Column(unique = true)
     private String email;
 
     @Column(nullable = false)
@@ -51,4 +51,7 @@ public class User {
 
     @Column(name = "parent_consent")
     private boolean parentConsent;
+
+    @Column(name = "has_active_subscription")
+    private boolean hasActiveSubscription;
 }

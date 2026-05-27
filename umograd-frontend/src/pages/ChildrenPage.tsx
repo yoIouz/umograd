@@ -180,8 +180,11 @@ export default function ChildrenPage() {
                 const rawData = await res.json();
                 const namedData: Record<string, any> = {};
                 children.forEach(c => {
-                    if (rawData[c.id]) {
-                        namedData[c.username] = rawData[c.id];
+                    const childData = rawData[c.id] || rawData[String(c.id)];
+                    if (childData) {
+                        namedData[c.id] = childData;
+                        namedData[String(c.id)] = childData;
+                        namedData[c.username] = childData;
                     }
                 });
                 setChartData(namedData);

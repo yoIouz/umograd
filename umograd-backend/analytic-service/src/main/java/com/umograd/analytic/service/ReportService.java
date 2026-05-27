@@ -1,10 +1,8 @@
 package com.umograd.analytic.service;
 
-import com.umograd.analytic.dto.ChildProgressPoint;
-
-import java.util.List;
+import com.umograd.analytic.dto.report.ChildReportDto;
 
 public interface ReportService {
 
-    List<ChildProgressPoint> getChildReport(Long childId, String period);
+    ChildReportDto getChildReport(Long childId, String period);
 }

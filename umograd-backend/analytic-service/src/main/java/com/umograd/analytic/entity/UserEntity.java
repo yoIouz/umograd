@@ -28,6 +28,9 @@ public class UserEntity {
     @Column(name = "parent_consent")
     private boolean parentConsent;
 
+    @Column(name = "has_active_subscription")
+    private boolean hasActiveSubscription;
+
     public int getAge() {
         if (this.birthDate == null) return 18;
         return Period.between(this.birthDate, LocalDate.now()).getYears();

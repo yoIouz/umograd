@@ -1,97 +1,121 @@
-import { type JSX } from "react";
-
-type ProgressPoint = {
-    date: string;
-    averageScore: number;
-    averageTimeSeconds: number;
-    difficulty: string;
+type ProgressChartProps = {
+    data: {
+        progressPoints: { date: string; score: number }[];
+        timePoints: { date: string; averageSeconds: number }[];
+        difficultyStats: Record<string, number>;
+    };
 };
 
-type Props = {
-    data: ProgressPoint[];
-};
+export default function ProgressChart({ data }: ProgressChartProps) {
+    const progressData = data?.progressPoints || [];
+    const timeData = data?.timePoints || [];
+    const diffStats = data?.difficultyStats || { EASY: 0, MEDIUM: 0, HARD: 0 };
 
-export default function ProgressChart({ data }: Props): JSX.Element {
-    if (!data || data.length === 0) {
-        return <div style={{ textAlign: "center", color: "#6F7376", padding: "20px", fontFamily: "Nunito" }}>Нет данных для построения графика</div>;
-    }
-
-    const width = 500;
-    const height = 200;
-    const padding = 40;
-
-    const chartWidth = width - padding * 2;
-    const chartHeight = height - padding * 2;
-
-    const maxScore = 100;
-    const minScore = 0;
-    const pointsCount = data.length;
-
-    const svgPoints = data.map((d, index) => {
-        const x = padding + (pointsCount > 1 ? (index / (pointsCount - 1)) * chartWidth : chartWidth / 2);
-        const y = padding + chartHeight - ((d.averageScore - minScore) / (maxScore - minScore)) * chartHeight;
-        return { x, y, score: d.averageScore, date: d.date };
-    });
-
-    const polylinePath = svgPoints.map(p => `${p.x},${p.y}`).join(" ");
+    const totalDiffTasks = (diffStats.EASY || 0) + (diffStats.MEDIUM || 0) + (diffStats.HARD || 0);
 
     return (
-        <div style={{ display: "flex", flexDirection: "column", gap: "20px", width: "100%", fontFamily: "Nunito, sans-serif" }}>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", background: "rgba(255, 255, 255, 0.6)", padding: "20px", borderRadius: "20px" }}>
-                <svg width={width} height={height}>
-                    <line x1={padding} y1={padding} x2={padding} y2={height - padding} stroke="#6F7376" strokeWidth="2" />
-                    <line x1={padding} y1={height - padding} x2={width - padding} y2={height - padding} stroke="#6F7376" strokeWidth="2" />
+        <div style={{ display: "flex", flexDirection: "column", gap: "25px", fontFamily: "Nunito, sans-serif", width: "100%", boxSizing: "border-box" }}>
 
-                    {[0, 25, 50, 75, 100].map((val) => {
-                        const y = padding + chartHeight - (val / 100) * chartHeight;
-                        return (
-                            <g key={val}>
-                                <line x1={padding - 5} y1={y} x2={padding} y2={y} stroke="#6F7376" strokeWidth="1" />
-                                <text x={padding - 10} y={y + 4} textAnchor="end" fontSize="12" fill="#6F7376">{val}</text>
-                            </g>
-                        );
-                    })}
+            <div style={{ background: "#f8fafc", padding: "20px", borderRadius: "24px", border: "1px solid rgba(104, 158, 202, 0.15)", boxSizing: "border-box", width: "100%" }}>
+                <h4 style={{ margin: "0 0 15px 0", color: "#2d3748", fontSize: "16px", fontWeight: 800 }}>Успешность выполнения (%)</h4>
+                {progressData.length === 0 ? (
+                    <div style={{ textAlign: "center", padding: "20px", color: "#a0aec0", fontSize: "14px" }}>Нет данных за выбранный период</div>
+                ) : (
+                    <div style={{ width: "100%", height: "180px" }}>
+                        <svg width="100%" height="100%" viewBox="0 0 600 180">
+                            <line x1="60" y1="20" x2="60" y2="140" stroke="#e2e8f0" strokeWidth="1.5" />
+                            <line x1="60" y1="140" x2="560" y2="140" stroke="#e2e8f0" strokeWidth="1.5" />
+                            {[0, 25, 50, 75, 100].map((val) => {
+                                const y = 140 - (val * 110) / 100;
+                                return (
+                                    <g key={val}>
+                                        <text x="20" y={y + 4} fill="#718096" style={{ fontSize: "11px", fontWeight: 700 }}>{val}%</text>
+                                        <line x1="55" y1={y} x2="560" y2={y} stroke="#f1f5f9" strokeWidth="1" strokeDasharray="4 4" />
+                                    </g>
+                                );
+                            })}
+                            {progressData.map((pt, idx) => {
+                                const x = 80 + (idx * 450) / Math.max(1, progressData.length - 1);
+                                const y = 140 - (pt.score * 110) / 100;
+                                const nextPt = progressData[idx + 1];
+                                const nextX = nextPt ? 80 + ((idx + 1) * 450) / Math.max(1, progressData.length - 1) : x;
+                                const nextY = nextPt ? 140 - (nextPt.score * 110) / 100 : y;
 
-                    {svgPoints.map((p, idx) => {
-                        const showLabel = idx === 0 || idx === svgPoints.length - 1 || (svgPoints.length > 5 && idx === Math.floor(svgPoints.length / 2));
-                        if (!showLabel) return null;
-                        return (
-                            <g key={idx}>
-                                <line x1={p.x} y1={height - padding} x2={p.x} y2={height - padding + 5} stroke="#6F7376" strokeWidth="1" />
-                                <text x={p.x} y={height - padding + 20} textAnchor="middle" fontSize="10" fill="#6F7376">
-                                    {p.date}
-                                </text>
-                            </g>
-                        );
-                    })}
-
-                    {data.length > 1 && (
-                        <polyline fill="none" stroke="#4A90E2" strokeWidth="3" points={polylinePath} strokeLinecap="round" strokeLinejoin="round" />
-                    )}
-
-                    {svgPoints.map((p, idx) => (
-                        <g key={idx}>
-                            <circle cx={p.x} cy={p.y} r="5" fill="#8FDADB" stroke="#4A90E2" strokeWidth="2" />
-                            <text x={p.x} y={p.y - 10} textAnchor="middle" fontSize="11" fontWeight="700" fill="#2d3748">{Math.round(p.score)}</text>
-                        </g>
-                    ))}
-                </svg>
-            </div>
-            
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
-                <div style={{ background: "rgba(104, 158, 202, 0.15)", padding: "15px", borderRadius: "15px", textAlign: "center" }}>
-                    <div style={{ fontSize: "14px", fontWeight: 700, color: "#6F7376" }}>Ср. время решения</div>
-                    <div style={{ fontSize: "20px", fontWeight: 700, color: "#4A90E2", marginTop: "5px" }}>
-                        {Math.round(data.reduce((acc, p) => acc + p.averageTimeSeconds, 0) / data.length)} сек
+                                return (
+                                    <g key={idx}>
+                                        {nextPt && <line x1={x} y1={y} x2={nextX} y2={nextY} stroke="#4A90E2" strokeWidth="3" strokeLinecap="round" />}
+                                        <circle cx={x} cy={y} r="5" fill="#4A90E2" stroke="white" strokeWidth="2" />
+                                        <text x={x} y="158" fill="#718096" style={{ fontSize: "11px", fontWeight: 700 }} textAnchor="middle">
+                                            {pt.date.substring(5)}
+                                        </text>
+                                        <text x={x} y={y - 8} fill="#2d3748" style={{ fontSize: "11px", fontWeight: 800 }} textAnchor="middle">{pt.score}%</text>
+                                    </g>
+                                );
+                            })}
+                        </svg>
                     </div>
-                </div>
-                <div style={{ background: "rgba(127, 202, 104, 0.15)", padding: "15px", borderRadius: "15px", textAlign: "center" }}>
-                    <div style={{ fontSize: "14px", fontWeight: 700, color: "#6F7376" }}>Категория / Сложность</div>
-                    <div style={{ fontSize: "16px", fontWeight: 700, color: "#7FCA68", marginTop: "8px" }}>
-                        {Array.from(new Set(data.map(p => p.difficulty))).join(", ")}
-                    </div>
-                </div>
+                )}
             </div>
+
+            <div style={{ background: "#f8fafc", padding: "20px", borderRadius: "24px", border: "1px solid rgba(104, 158, 202, 0.15)", boxSizing: "border-box", width: "100%" }}>
+                <h4 style={{ margin: "0 0 15px 0", color: "#2d3748", fontSize: "16px", fontWeight: 800 }}>Динамика времени решения (сек)</h4>
+                {timeData.length === 0 ? (
+                    <div style={{ textAlign: "center", padding: "20px", color: "#a0aec0", fontSize: "14px" }}>Нет данных за выбранный период</div>
+                ) : (
+                    <div style={{ width: "100%", height: "180px" }}>
+                        <svg width="100%" height="100%" viewBox="0 0 600 180">
+                            <line x1="60" y1="20" x2="60" y2="140" stroke="#e2e8f0" strokeWidth="1.5" />
+                            <line x1="60" y1="140" x2="560" y2="140" stroke="#e2e8f0" strokeWidth="1.5" />
+
+                            {timeData.map((pt, idx) => {
+                                const maxSec = Math.max(...timeData.map(d => d.averageSeconds || 1), 10);
+                                const x = 90 + (idx * 430) / Math.max(1, timeData.length);
+                                const barHeight = ((pt.averageSeconds || 0) * 110) / maxSec;
+                                const y = 140 - barHeight;
+
+                                return (
+                                    <g key={idx}>
+                                        <rect x={x - 12} y={y} width="24" height={barHeight} fill="#689ECA" rx="5" style={{ WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" }} />
+                                        <text x={x} y="158" fill="#718096" style={{ fontSize: "11px", fontWeight: 700 }} textAnchor="middle">
+                                            {pt.date.substring(5)}
+                                        </text>
+                                        <text x={x} y={y - 8} fill="#2d3748" style={{ fontSize: "11px", fontWeight: 800 }} textAnchor="middle">{pt.averageSeconds}с</text>
+                                    </g>
+                                );
+                            })}
+                        </svg>
+                    </div>
+                )}
+            </div>
+
+            <div style={{ background: "#f8fafc", padding: "20px", borderRadius: "24px", border: "1px solid rgba(104, 158, 202, 0.15)", boxSizing: "border-box", width: "100%" }}>
+                <h4 style={{ margin: "0 0 15px 0", color: "#2d3748", fontSize: "16px", fontWeight: 800 }}>Соотношение решенных задач по сложностям</h4>
+                {totalDiffTasks === 0 ? (
+                    <div style={{ textAlign: "center", padding: "20px", color: "#a0aec0", fontSize: "14px" }}>Нет выполненных заданий</div>
+                ) : (
+                    <div style={{ display: "flex", flexDirection: "column", gap: "12px", padding: "5px 0" }}>
+                        {[
+                            { name: "Легкие (EASY)", count: diffStats.EASY || 0, color: "#7FCA68" },
+                            { name: "Средние (MEDIUM)", count: diffStats.MEDIUM || 0, color: "#EC9F48" },
+                            { name: "Сложные (HARD)", count: diffStats.HARD || 0, color: "#FA5252" }
+                        ].map((item) => {
+                            const pct = totalDiffTasks > 0 ? Math.round((item.count * 100) / totalDiffTasks) : 0;
+                            return (
+                                <div key={item.name} style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+                                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", fontWeight: 700, color: "#4a5568" }}>
+                                        <span>{item.name}</span>
+                                        <span>{item.count} шт. ({pct}%)</span>
+                                    </div>
+                                    <div style={{ width: "100%", height: "10px", background: "#edf2f7", borderRadius: "30px", overflow: "hidden", WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" }}>
+                                        <div style={{ width: `${pct}%`, height: "100%", backgroundColor: item.color, borderRadius: "30px", WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" }}></div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+            </div>
+
         </div>
     );
 }

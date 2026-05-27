@@ -21,7 +21,7 @@ create table if not exists analytic_db.achievements
     name                 varchar(255) not null,
     description          varchar(255) null,
     icon_url             varchar(255) null,
-    condition_expression varchar(255) not null,
+    condition_expression text not null,
     condition_value      int          not null
 );
 
@@ -149,15 +149,16 @@ create table if not exists content_db.task_questions
 
 create table if not exists umograd.users
 (
-    id             bigint auto_increment
+    id                      bigint auto_increment
         primary key,
-    username       varchar(255)         not null,
-    email          varchar(255)         null,
-    password       varchar(255)         not null,
-    parent_id      bigint               null,
-    avatar_url     longtext             null,
-    birth_date     date                 null,
-    parent_consent tinyint(1) default 0 null,
+    username                varchar(255)         not null,
+    email                   varchar(255)         null,
+    password                varchar(255)         not null,
+    parent_id               bigint               null,
+    avatar_url              longtext             null,
+    birth_date              date                 null,
+    parent_consent          tinyint(1) default 0 null,
+    has_active_subscription tinyint(1) default 0 null,
     constraint uc_users_email
         unique (email),
     constraint uc_users_username

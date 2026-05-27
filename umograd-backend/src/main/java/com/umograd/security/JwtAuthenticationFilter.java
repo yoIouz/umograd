@@ -1,5 +1,6 @@
 package com.umograd.security;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,10 +45,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             try {
                 username = jwtTokenProvider.extractUsername(token);
-            } catch (io.jsonwebtoken.ExpiredJwtException ex) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return;
-            } catch (io.jsonwebtoken.JwtException ex) {
+            } catch (JwtException ex) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
