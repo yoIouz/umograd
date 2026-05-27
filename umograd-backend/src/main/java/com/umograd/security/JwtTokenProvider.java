@@ -39,7 +39,7 @@ public class JwtTokenProvider {
                 .map(GrantedAuthority::getAuthority)
                 .toList());
         if (birthDate != null) {
-            claims.put("birthDate", birthDate.toString()); // ISO-строка
+            claims.put("birthDate", birthDate.toString());
         }
 
         if (email != null) {

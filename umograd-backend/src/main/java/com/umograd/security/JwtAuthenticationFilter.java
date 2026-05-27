@@ -46,7 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 username = jwtTokenProvider.extractUsername(token);
             } catch (io.jsonwebtoken.ExpiredJwtException ex) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return; // прерываем цепочку фильтров
+                return;
             } catch (io.jsonwebtoken.JwtException ex) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
