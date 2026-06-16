@@ -9,6 +9,12 @@ import closeIcon from "../assets/close.png";
 import { useUser } from "../context/UserContext";
 import ProgressChart from "../components/ProgressChart.tsx";
 
+interface ChartData {
+    progressPoints: { date: string; score: number }[];
+    timePoints: { date: string; averageSeconds: number }[];
+    difficultyStats: Record<string, number>;
+}
+
 const roleMap: Record<string, string> = {
     ROLE_CHILD: "Ребёнок",
     ROLE_PARENT: "Родитель",
@@ -33,7 +39,7 @@ export default function UserPage() {
     const [avatar, setAvatar] = useState<string | null>(null);
 
     const [showChart, setShowChart] = useState(false);
-    const [chartData, setChartData] = useState([]);
+    const [chartData, setChartData] = useState<ChartData | null>(null);
     const [loadingChart, setLoadingChart] = useState(false);
     const [period, setPeriod] = useState<"day" | "week" | "month">("month");
 
@@ -74,6 +80,7 @@ export default function UserPage() {
     const openStatistics = async (targetChildId: number, selectedPeriod = "month") => {
         setLoadingChart(true);
         setShowChart(true);
+        setChartData(null);
         try {
             const token = localStorage.getItem("accessToken");
             const res = await fetch(`http://localhost:8182/api/v1/analytics/report/${targetChildId}?period=${selectedPeriod}`, {
@@ -91,7 +98,7 @@ export default function UserPage() {
 
     const handlePeriodChange = (newPeriod: "day" | "week" | "month") => {
         setPeriod(newPeriod);
-        setChartData([]);
+        setChartData(null);
         if (profile?.id) {
             openStatistics(profile.id, newPeriod);
         }
@@ -255,7 +262,8 @@ export default function UserPage() {
 
             {showChart && (
                 <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "rgba(0,0,0,0.5)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000 }}>
-                    <div style={{ background: "#fff", padding: "30px", borderRadius: "30px", width: "550px", position: "relative", boxShadow: "0 10px 25px rgba(0,0,0,0.1)", fontFamily: "Nunito" }}>
+                    {/* Добавлены свойства maxHeight и overflowY */}
+                    <div style={{ background: "#fff", padding: "30px", borderRadius: "30px", width: "550px", position: "relative", boxShadow: "0 10px 25px rgba(0,0,0,0.1)", fontFamily: "Nunito", maxHeight: "90vh", overflowY: "auto", boxSizing: "border-box" }}>
                         <h3 style={{ margin: "0 0 15px 0", color: "#6F7376", fontSize: "24px", fontWeight: 700 }}>Динамика успешности</h3>
 
                         <button
@@ -291,7 +299,7 @@ export default function UserPage() {
 
                         {loadingChart ? (
                             <div style={{ textAlign: "center", padding: "40px", color: "#6F7376" }}>Загрузка отчета...</div>
-                        ) : chartData.length === 0 ? (
+                        ) : !chartData ? (
                             <div style={{
                                 textAlign: "center",
                                 padding: "40px",

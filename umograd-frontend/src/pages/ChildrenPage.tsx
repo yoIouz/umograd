@@ -603,22 +603,43 @@ export default function ChildrenPage() {
 
             {showChart && (
                 <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "rgba(0,0,0,0.5)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000 }}>
-                    <div style={{ background: "#fff", padding: "30px", borderRadius: "30px", width: "600px", position: "relative", boxShadow: "0 10px 25px rgba(0,0,0,0.1)", fontFamily: "Nunito" }}>
-                        <h3 style={{ margin: "0 0 15px 0", color: "#6F7376", fontSize: "24px", fontWeight: 700 }}>
+                    <div style={{
+                        background: "#fff",
+                        padding: "30px",
+                        borderRadius: "30px",
+                        width: "600px",
+                        position: "relative",
+                        boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+                        fontFamily: "Nunito",
+                        maxHeight: "90vh",
+                        overflowY: "auto",
+                        boxSizing: "border-box",
+                        scrollbarGutter: "stable"
+                    }}>
+                        <h3 style={{margin: "0 0 15px 0", color: "#6F7376", fontSize: "24px", fontWeight: 700}}>
                             {isAggregate ? "Сводный отчёт по детям" : "Динамика успешности"}
                         </h3>
 
                         <button
                             className="no-print"
                             onClick={() => setShowChart(false)}
-                            style={{ position: "absolute", top: "20px", right: "20px", background: "none", border: "none", fontSize: "24px", cursor: "pointer", color: "#6F7376" }}
+                            style={{
+                                position: "absolute",
+                                top: "20px",
+                                right: "20px",
+                                background: "none",
+                                border: "none",
+                                fontSize: "24px",
+                                cursor: "pointer",
+                                color: "#6F7376"
+                            }}
                         >
                             ×
                         </button>
 
                         {!isAggregate && (
-                            <div className="no-print" style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
-                                {([ "day", "week", "month" ] as const).map((p) => (
+                            <div className="no-print" style={{display: "flex", gap: "10px", marginBottom: "20px"}}>
+                                {(["day", "week", "month"] as const).map((p) => (
                                     <button
                                         key={p}
                                         onClick={() => handlePeriodChange(p)}
@@ -642,7 +663,8 @@ export default function ChildrenPage() {
                         )}
 
                         {loadingChart ? (
-                            <div style={{ textAlign: "center", padding: "40px", color: "#6F7376" }}>Загрузка отчета...</div>
+                            <div style={{textAlign: "center", padding: "40px", color: "#6F7376"}}>Загрузка
+                                отчета...</div>
                         ) : (!isAggregate && chartData.length === 0) || (isAggregate && Object.keys(chartData).length === 0) ? (
                             <div style={{
                                 textAlign: "center",
@@ -658,11 +680,12 @@ export default function ChildrenPage() {
                         ) : (
                             <div>
                                 {isAggregate ? (
-                                    <AggregateProgressChart childrenData={chartData} />
+                                    <AggregateProgressChart childrenData={chartData}/>
                                 ) : (
-                                    <ProgressChart data={chartData} />
+                                    <ProgressChart data={chartData}/>
                                 )}
-                                <div className="no-print" style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
+                                <div className="no-print"
+                                     style={{display: "flex", justifyContent: "center", marginTop: "20px"}}>
                                     <button
                                         onClick={() => window.print()}
                                         style={{

@@ -108,7 +108,7 @@ export default function SubscriptionPage() {
                             <div style={{ border: "2px solid #689ECA", borderRadius: "20px", padding: "25px", background: "rgba(104, 158, 202, 0.01)" }}>
                                 <span style={{ background: "#689ECA", color: "white", padding: "4px 12px", borderRadius: "20px", fontSize: "11px", fontWeight: 700, textTransform: "uppercase" }}>Выбор тарифа</span>
                                 <h3 style={{ fontSize: "22px", fontWeight: 800, margin: "15px 0 5px 0", color: "#2d3748" }}>Полный доступ на год</h3>
-                                <div style={{ fontSize: "32px", fontWeight: 800, color: "#689ECA", margin: "10px 0" }}>2 990 ₽ <span style={{ fontSize: "14px", color: "#718096", fontWeight: 500 }}>/ год</span></div>
+                                <div style={{ fontSize: "32px", fontWeight: 800, color: "#689ECA", margin: "10px 0" }}>45 Byn <span style={{ fontSize: "14px", color: "#718096", fontWeight: 500 }}>/ год</span></div>
                                 <ul style={{ textAlign: "left", color: "#4a5568", fontSize: "14px", paddingLeft: "20px", margin: "20px 0", lineHeight: "1.6" }}>
                                     <li>🚀 Открытие скрытых Олимпиад и тестов высокой сложности</li>
                                     <li>📈 Еженедельные расширенные PDF-отчеты успеваемости</li>
@@ -144,7 +144,7 @@ export default function SubscriptionPage() {
                                 <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
                                     <button type="button" onClick={() => setIsFormOpen(false)} style={{ flex: 1, background: "#edf2f7", border: "none", borderRadius: "30px", padding: "12px", color: "#4a5568", fontWeight: 700, cursor: "pointer", fontFamily: "Nunito" }}>Отмена</button>
                                     <button type="submit" disabled={loading} style={{ flex: 2, background: "linear-gradient(90deg, #7FCA68 0%, #A3DB8F 100%)", border: "none", borderRadius: "30px", padding: "12px", color: "white", fontWeight: 700, cursor: "pointer", boxShadow: "0 4px 10px rgba(127, 202, 104, 0.2)", fontFamily: "Nunito" }}>
-                                        Оплатить 2 990 ₽
+                                        Оплатить 45 Byn
                                     </button>
                                 </div>
                             </form>
